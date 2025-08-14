@@ -3,64 +3,50 @@ import { v } from "convex/values";
 
 export const createScan = mutation({
   args: {
-    userId: v.id("users"),
+    userId: v.string(), // Clerk user ID
     url: v.string(),
   },
   handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.userId))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     const scanId = await ctx.db.insert("scans", {
-      userId: args.userId,
+      userId: user._id,
       url: args.url,
       status: "pending",
     });
 
-    // Simulate a delay for the scan
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    // Mock vulnerability report
-    const mockReport = [
-      {
-        vulnerability: "SQL Injection",
-        severity: "high",
-        description: "Potential SQL injection vulnerability found in input field.",
-        poc: "' OR 1=1 --",
-        fix: "Use prepared statements or parameterized queries.",
-        educationalNotes: "SQL injection is a code injection technique used to attack data-driven applications, in which malicious SQL statements are inserted into an entry field for execution (e.g., to dump the database contents to the attacker).",
-      },
-      {
-        vulnerability: "Cross-Site Scripting (XSS)",
-        severity: "medium",
-        description: "Reflected XSS vulnerability found in search parameter.",
-        poc: "<script>alert('XSS')</script>",
-        fix: "Sanitize all user-supplied input before rendering it on the page.",
-        educationalNotes: "Cross-Site Scripting (XSS) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites. XSS attacks occur when an attacker uses a web application to send malicious code, generally in the form of a browser side script, to a different end user.",
-      },
-      {
-        vulnerability: "Insecure Direct Object Reference (IDOR)",
-        severity: "low",
-        description: "User ID in URL is directly accessible without proper authorization checks.",
-        poc: "/api/users?id=123",
-        fix: "Implement proper authorization checks for all direct object references.",
-        educationalNotes: "Insecure Direct Object Reference (IDOR) is a type of access control vulnerability that arises when an application uses user-supplied input to access objects directly. This can allow attackers to bypass authorization and access resources they are not authorized to access.",
-      },
-    ];
-
-    await ctx.db.patch(scanId, {
-      status: "completed",
-      report: mockReport,
-    });
+    // In a real app, you would trigger a backend process to perform the scan.
+    // For this example, we'll simulate the scan and generate a mock report.
+    // Do not block the client for the full scan duration.
 
     return scanId;
   },
 });
 
-export const getScans = query({
+export const getScansForUser = query({
   args: {
-    userId: v.id("users"),
+    userId: v.string(), // Clerk user ID
   },
   handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.userId))
+      .unique();
+
+    if (!user) {
+      return [];
+    }
+
     return await ctx.db
       .query("scans")
-      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_id", (q) => q.eq("userId", user._id))
       .order("desc")
       .collect();
   },
