@@ -12,6 +12,9 @@ export function Header() {
           <Link href="/dashboard" className="text-muted-foreground hover:text-primary">
             Dashboard
           </Link>
+          <Link href="/" className="text-muted-foreground hover:text-primary">
+            Scan
+          </Link>
           <UserButton afterSignOutUrl="/" />
         </SignedIn>
         <SignedOut>

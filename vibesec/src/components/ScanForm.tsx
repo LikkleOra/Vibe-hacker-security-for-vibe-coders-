@@ -40,7 +40,7 @@ export function ScanForm() {
       const convexUserId = user.id;
 
       const scanId = await createScan({
-        userId: convexUserId as any,
+        userId: convexUserId,
         url,
       });
       toast.success(`Scan for ${url} initiated.`, {

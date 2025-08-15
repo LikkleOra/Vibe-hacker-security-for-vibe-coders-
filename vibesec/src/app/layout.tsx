@@ -1,8 +1,9 @@
 "use client";
 
-import type { Metadata } from "next";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Header } from "@/components/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,12 +17,13 @@ const geistMono = Geist_Mono({
 
 
 
-import { ClerkProvider } from "@clerk/nextjs";
+import { useAuth, ClerkProvider } from "@clerk/nextjs";
 
 import { Toaster } from "@/components/ui/sonner";
 
-import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
+import { ConvexReactClient } from "convex/react";
+
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL as string);
 
@@ -32,16 +34,17 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <ConvexProvider client={convex}>
+      <ConvexProviderWithClerk useAuth={useAuth} client={convex}>
         <html lang="en">
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            {children}
+            <Header />
+            <main>{children}</main>
             <Toaster />
           </body>
         </html>
-      </ConvexProvider>
+      </ConvexProviderWithClerk>
     </ClerkProvider>
   );
 }

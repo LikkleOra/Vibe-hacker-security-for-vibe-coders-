@@ -1,0 +1,14 @@
+✔ Provisioned a dev deployment and saved its name as CONVEX_DEPLOYMENT to .env.local
+
+Write your Convex functions in convex/
+Give us feedback at https://convex.dev/community or support@convex.dev
+View the Convex dashboard at https://dashboard.convex.dev/d/incredible-dodo-967
+
+- Preparing Convex functions...
+
+✘ [ERROR] No matching export in "node_modules/convex/dist/esm/server/index.js" for import "defineAuthConfig"
+
+    convex/auth.config.js:1:9:
+      1 │ import { defineAuthConfig } from "convex/server";
+        ╵          ~~~~~~~~~~~~~~~~
+
