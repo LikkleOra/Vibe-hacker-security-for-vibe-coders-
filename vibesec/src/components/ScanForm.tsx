@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useSafeMutation } from "@/hooks/useSafeConvex";
 import { api } from "../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,11 @@ import { SignInButton, SignUpButton } from "@clerk/nextjs";
 export function ScanForm() {
   const [url, setUrl] = useState("");
   const { user, isLoaded } = useUser();
-  const createScan = useMutation(api.scans.createScan);
+  const createScan = useSafeMutation(api.scans.createScan);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded || !user) {
-      // This case should ideally be handled by the UI, but as a fallback:
       toast.error("Authentication Required", {
         description: "Please sign in or sign up to start a scan.",
         action: (
@@ -36,19 +35,15 @@ export function ScanForm() {
       return;
     }
 
-    try {
-      const scanId = await createScan({
-        url,
-      });
+    const scanId = await createScan({
+      url,
+    });
+
+    if (scanId) {
       toast.success(`Scan for ${url} initiated.`, {
         description: `Scan ID: ${scanId}`,
       });
       setUrl("");
-    } catch (error) {
-      console.error("Failed to create scan:", error);
-      toast.error("Failed to start scan.", {
-        description: "Please try again.",
-      });
     }
   };
 
