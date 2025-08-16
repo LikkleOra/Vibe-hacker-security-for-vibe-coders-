@@ -1,4 +1,5 @@
 import { httpRouter } from "convex/server";
+import { httpAction } from "./_generated/server";
 
 const http = httpRouter();
 
@@ -6,9 +7,9 @@ const http = httpRouter();
 http.route({
   path: "/hello",
   method: "GET",
-  handler: async (ctx, request) => {
+  handler: httpAction(async (ctx, request) => {
     return new Response("Hello from Convex HTTP!");
-  },
+  }),
 });
 
 export default http;
