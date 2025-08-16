@@ -1,19 +1,25 @@
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 
 export const createScan = mutation({
   args: {
-    userId: v.string(), // Clerk user ID
     url: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("User is not authenticated.");
+    }
+
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.userId))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
       .unique();
 
     if (!user) {
-      throw new Error("User not found");
+      // In a real app, you might want to create the user here.
+      // For now, we'll assume the user is created upon sign-up.
+      throw new ConvexError("User not found in Convex database.");
     }
 
     const scanId = await ctx.db.insert("scans", {
@@ -22,22 +28,22 @@ export const createScan = mutation({
       status: "pending",
     });
 
-    // In a real app, you would trigger a backend process to perform the scan.
-    // For this example, we'll simulate the scan and generate a mock report.
-    // Do not block the client for the full scan duration.
-
     return scanId;
   },
 });
 
 export const getScansForUser = query({
-  args: {
-    userId: v.string(), // Clerk user ID
-  },
+  args: {},
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      // Not logged in, so no scans to return.
+      return [];
+    }
+
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.userId))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
       .unique();
 
     if (!user) {
@@ -57,6 +63,26 @@ export const getScanById = query({
     scanId: v.id("scans"),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.scanId);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const scan = await ctx.db.get(args.scanId);
+    if (!scan) {
+      return null;
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user || scan.userId !== user._id) {
+      // The user is not the owner of the scan.
+      return null;
+    }
+
+    return scan;
   },
 });
