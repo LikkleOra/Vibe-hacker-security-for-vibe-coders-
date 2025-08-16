@@ -1,5 +1,14 @@
-import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { mutation, query } from './_generated/server';
+import { v } from 'convex/values';
+
+type ReportItem = {
+  vulnerability: string;
+  severity: "low" | "medium" | "high" | "critical";
+  description: string;
+  poc: string;
+  fix: string;
+  educationalNotes: string;
+};
 
 export const createScan = mutation({
   args: {
@@ -17,7 +26,7 @@ export const createScan = mutation({
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // Mock vulnerability report
-    const mockReport = [
+    const mockReport: ReportItem[] = [
       {
         vulnerability: "SQL Injection",
         severity: "high",

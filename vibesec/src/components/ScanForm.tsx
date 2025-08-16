@@ -31,6 +31,7 @@ export function ScanForm() {
       const convexUserId = user.id; // Placeholder: Replace with actual Convex user ID
 
       const scanId = await createScan({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         userId: convexUserId as any, // Cast as any for now, will fix with proper Convex user ID
         url,
       });
