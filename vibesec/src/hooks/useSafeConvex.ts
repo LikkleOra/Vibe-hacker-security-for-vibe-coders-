@@ -4,7 +4,7 @@ import { useQueries, useMutation } from "convex/react";
 import { toast } from "sonner";
 import { ConvexError } from "convex/values";
 import { FunctionReference } from "convex/server";
-import { useEffect } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 
 /**
  * A wrapper for useQuery that uses useQueries to safely handle errors
@@ -16,12 +16,16 @@ export function useSafeQuery<Query extends FunctionReference<"query">>(
   args: Query["_args"]
 ) {
   const queryKey = "safeQuery";
-  const results = useQueries({
-    [queryKey]: {
-      query,
-      args,
-    },
-  });
+  const queries = useMemo(() => {
+    return {
+      [queryKey]: {
+        query,
+        args,
+      },
+    };
+  }, [query, args]);
+
+  const results = useQueries(queries);
 
   const result = results[queryKey];
   const isLoading = result === undefined;
@@ -46,23 +50,26 @@ export function useSafeMutation<Mutation extends FunctionReference<"mutation">>(
 ) {
   const convexMutation = useMutation(mutation);
 
-  const safeMutation = async (args: Mutation["_args"]) => {
-    try {
-      return await convexMutation(args);
-    } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Convex mutation error:", error);
-      }
+  const safeMutation = useCallback(
+    async (args: Mutation["_args"]) => {
+      try {
+        return await convexMutation(args);
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Convex mutation error:", error);
+        }
 
-      if (error instanceof ConvexError) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+        if (error instanceof ConvexError) {
+          toast.error(error.message);
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
 
-      return null;
-    }
-  };
+        return null;
+      }
+    },
+    [convexMutation]
+  );
 
   return safeMutation;
 }
