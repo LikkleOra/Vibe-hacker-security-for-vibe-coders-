@@ -4,6 +4,25 @@ import git from "isomorphic-git";
 import http from "isomorphic-git/http/node";
 import fs from "fs";
 import path from "path";
+import { secretPatterns } from "../src/lib/patterns";
+
+// Helper function to recursively walk a directory
+async function walkDir(dir: string): Promise<string[]> {
+  let files: string[] = [];
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const res = path.resolve(dir, entry.name);
+    if (entry.isDirectory()) {
+      // Exclude .git directory
+      if (entry.name !== '.git') {
+        files = files.concat(await walkDir(res));
+      }
+    } else {
+      files.push(res);
+    }
+  }
+  return files;
+}
 
 type ReportItem = {
   vulnerability: string;
@@ -40,7 +59,7 @@ export const createScan = mutation({
     });
 
     const dir = path.join("/tmp", scanId.toString());
-    
+
     try {
       await fs.promises.mkdir(dir, { recursive: true });
       await git.clone({
@@ -52,20 +71,41 @@ export const createScan = mutation({
         depth: 1,
       });
 
-      // In the next phase, we will scan the files here.
-      // For now, just mark it as cloned.
+      await ctx.db.patch(scanId, { status: "scanning" });
+
+      const allFiles = await walkDir(dir);
+      const findings: ReportItem[] = [];
+
+      for (const file of allFiles) {
+        const content = await fs.promises.readFile(file, "utf-8");
+        for (const { type, pattern } of secretPatterns) {
+          const matches = content.match(pattern);
+          if (matches) {
+            for (const match of matches) {
+              findings.push({
+                vulnerability: `Hardcoded Secret: ${type}`,
+                severity: "high",
+                description: "A hardcoded secret matching the pattern for ${type} was found in the file. Storing secrets in code is a major security risk.",
+                poc: `File: ${path.relative(dir, file)}, Match: "${match.substring(0, 50)}"..."`,
+                fix: "Store secrets in a secure vault or environment variables, and access them at runtime.",
+                educationalNotes: "Hardcoding secrets makes them easily accessible to anyone with source code access and complicates key rotation.",
+              });
+            }
+          }
+        }
+      }
+
       await ctx.db.patch(scanId, {
-        status: "cloned",
+        status: "completed",
+        report: findings,
       });
 
     } catch (error) {
-      console.error("Error cloning repository:", error);
+      console.error("Error during scan:", error);
       await ctx.db.patch(scanId, {
         status: "failed",
       });
-      // We don't rethrow the error to the client, but the status reflects the failure.
     } finally {
-      // Clean up the cloned repository
       await fs.promises.rm(dir, { recursive: true, force: true });
     }
 
@@ -78,7 +118,6 @@ export const getScansForUser = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      // Not logged in, so no scans to return.
       return [];
     }
 
@@ -120,7 +159,6 @@ export const getScanById = query({
       .unique();
 
     if (!user || scan.userId !== user._id) {
-      // The user is not the owner of the scan.
       return null;
     }
 
