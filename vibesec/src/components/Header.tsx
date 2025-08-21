@@ -1,7 +1,10 @@
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton, useClerk } from "@clerk/nextjs";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 export function Header() {
+  const { openSignIn, isLoaded, isSignedIn } = useClerk();
+
   return (
     <header className="flex items-center justify-between p-4 border-b">
       <Link href="/" className="text-2xl font-bold text-primary">
@@ -18,7 +21,15 @@ export function Header() {
           <UserButton afterSignOutUrl="/" />
         </SignedIn>
         <SignedOut>
-          <SignInButton mode="modal" />
+          <Button
+            onClick={() => {
+              if (!isLoaded) return;
+              if (isSignedIn) return;
+              openSignIn();
+            }}
+          >
+            Sign In
+          </Button>
         </SignedOut>
       </nav>
     </header>
