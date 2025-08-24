@@ -55,3 +55,5 @@ The current focus is on building the core MVP features, which include:
 ## Contributing
 
 Contributions are welcome! We are currently working on adding a `LICENSE` and a CI/CD pipeline. Please feel free to open an issue or submit a pull request.
+
+<!-- This is a small change to trigger the CI/CD workflow. -->
