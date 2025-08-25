@@ -11,7 +11,7 @@ export default defineSchema({
   scans: defineTable({
     userId: v.id("users"),
     url: v.string(),
-    status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed")),
+    status: v.union(v.literal("pending"), v.literal("cloning"), v.literal("scanning"), v.literal("completed"), v.literal("failed")),
     report: v.optional(v.array(v.object({
       vulnerability: v.string(),
       severity: v.union(v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("critical")),

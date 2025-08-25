@@ -1,0 +1,33 @@
+name: VibeSec Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  vibesec-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run VibeSec scan
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python run_vibesec_scan.py
+
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: vibesec-results
+          path: vibesec/final_coached_results.json

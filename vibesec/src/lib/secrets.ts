@@ -5,6 +5,12 @@ export interface Secret {
   file: string;
   line: number;
   snippet: string;
+  ai_coach_notes?: {
+    jargon_explanation: string;
+    risk_analysis: string;
+    suggested_fix: string;
+    vibe: string;
+  };
 }
 
 export function scanForSecrets(fileContent: string, fileName: string): Secret[] {

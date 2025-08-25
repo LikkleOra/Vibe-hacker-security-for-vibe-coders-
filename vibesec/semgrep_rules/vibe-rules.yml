@@ -1,0 +1,14 @@
+rules:
+  - id: vibe-no-old-library
+    message: "Vibe check: 'vibe-old-library' is deprecated. Please use 'vibe-new-library' instead. See our docs at [link-to-docs] for migration steps."
+    languages: [javascript, typescript]
+    severity: WARNING
+    pattern-either:
+      - pattern: "import { ... } from 'vibe-old-library'"
+      - pattern: "require('vibe-old-library')"
+  - id: vibe-no-console-log
+    message: "Vibe check: Avoid using console.log. Use our custom logger for better context and filtering. It also makes you look more like a pro."
+    languages: [javascript, typescript]
+    severity: INFO
+    pattern: "console.log(...)"
+    fix: "logger.info(...)"

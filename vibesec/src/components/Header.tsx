@@ -1,9 +1,12 @@
-import { SignedIn, SignedOut, UserButton, useClerk } from "@clerk/nextjs";
+"use client";
+
+import { SignedIn, SignedOut, UserButton, useClerk, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
 export function Header() {
-  const { openSignIn, isLoaded, isSignedIn } = useClerk();
+  const { openSignIn } = useClerk();
+  const { isLoaded, isSignedIn } = useAuth();
 
   return (
     <header className="flex items-center justify-between p-4 border-b">
