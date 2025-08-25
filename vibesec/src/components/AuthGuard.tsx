@@ -14,7 +14,7 @@ import React, { useEffect, useRef } from "react";
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const renderCount = useRef(0);
   renderCount.current += 1;
-  console.log('AuthGuard render count:', renderCount.current);
+  
 
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
