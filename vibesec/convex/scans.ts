@@ -6,15 +6,27 @@ import fs from "fs";
 import path from "path";
 import { secretPatterns } from "../src/lib/patterns";
 
+// Securely join a path and ensure it stays within the base directory
+function secureJoin(base: string, ...paths: string[]): string {
+  const joinedPath = path.join(base, ...paths);
+  const normalizedPath = path.normalize(joinedPath);
+
+  if (!normalizedPath.startsWith(path.normalize(base))) {
+    throw new ConvexError("Potential path traversal attempt detected.");
+  }
+
+  return normalizedPath;
+}
+
 // Helper function to recursively walk a directory
 async function walkDir(dir: string): Promise<string[]> {
   let files: string[] = [];
   const entries = await fs.promises.readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
-    const res = path.resolve(dir, entry.name);
+    const res = secureJoin(dir, entry.name);
     if (entry.isDirectory()) {
       // Exclude .git directory
-      if (entry.name !== '.git') {
+      if (entry.name !== ".git") {
         files = files.concat(await walkDir(res));
       }
     } else {
@@ -58,7 +70,7 @@ export const createScan = mutation({
       status: "cloning",
     });
 
-    const dir = path.join("/tmp", scanId.toString());
+    const dir = secureJoin("/tmp", scanId.toString());
 
     try {
       await fs.promises.mkdir(dir, { recursive: true });
@@ -86,7 +98,7 @@ export const createScan = mutation({
                 vulnerability: `Hardcoded Secret: ${type}`,
                 severity: "high",
                 description: "A hardcoded secret matching the pattern for ${type} was found in the file. Storing secrets in code is a major security risk.",
-                poc: `File: ${path.relative(dir, file)}, Match: "${match.substring(0, 50)}"..."`,
+                poc: `File: ${path.relative(dir, file)}, Match: "${match.substring(0, 50)}"..."",
                 fix: "Store secrets in a secure vault or environment variables, and access them at runtime.",
                 educationalNotes: "Hardcoding secrets makes them easily accessible to anyone with source code access and complicates key rotation.",
               });

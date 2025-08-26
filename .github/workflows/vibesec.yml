@@ -1,7 +1,7 @@
 name: VibeSec Scan
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -25,6 +25,52 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python run_vibesec_scan.py
+
+      - name: Check for critical vulnerabilities
+        run: python check_results.py
+
+      - name: Post PR comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('vibesec/final_coached_results.json', 'utf8'));
+            const severities = {
+              'HIGH': [],
+              'MEDIUM': [],
+              'LOW': [],
+              'INFO': []
+            };
+
+            for (const result of results) {
+              severities[result.severity].push(result);
+            }
+
+            let commentBody = `
+              ## VibeSec Scan Results\n\nFound ${results.length} vulnerabilities.\n\n| Severity | Count |\n| --- | --- |\n`;
+
+            for (const severity in severities) {
+              commentBody += `| ${severity} | ${severities[severity].length} |\n`;
+            }
+
+            commentBody += `\n### Vulnerabilities\n\n`;
+
+            for (const severity in severities) {
+              if (severities[severity].length > 0) {
+                commentBody += `#### ${severity}\n\n`;
+                for (const result of severities[severity]) {
+                  commentBody += `- ${result.description}\n`;
+                }
+              }
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
 
       - name: Upload results
         uses: actions/upload-artifact@v3

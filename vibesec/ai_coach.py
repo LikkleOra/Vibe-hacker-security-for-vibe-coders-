@@ -1,5 +1,3 @@
-
-
 import json
 import os
 import google.generativeai as genai
@@ -7,17 +5,6 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env.local
 load_dotenv(".env.local")
-
-# Configure the Gemini API
-try:
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY not found in .env.local")
-    genai.configure(api_key=api_key)
-except Exception as e:
-    print(f"Error configuring Gemini API: {e}")
-    # Exit or handle the error as appropriate
-    exit(1)
 
 def generate_ai_prompt(finding):
     """
@@ -77,7 +64,26 @@ def add_ai_coaching(semgrep_results_with_vibes):
     """
     Takes enriched findings, generates a prompt for each,
     and adds a real AI coaching response.
+    If the Gemini API is not configured, it will skip the AI coaching.
     """
+    # Try to configure the Gemini API
+    try:
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY not found in .env.local")
+        genai.configure(api_key=api_key)
+    except Exception as e:
+        print(f"Warning: Could not configure Gemini API. {e}. Skipping AI coaching.")
+        # Add a note to the results that AI coaching was skipped
+        for finding in semgrep_results_with_vibes.get("results", []):
+            finding["extra"]["ai_coach_notes"] = {
+                "jargon_explanation": "AI Coach Skipped.",
+                "risk_analysis": "Gemini API key not configured.",
+                "suggested_fix": "Please add your GEMINI_API_KEY to vibesec/.env.local to enable AI analysis.",
+                "vibe": "The AI coach is unavailable."
+            }
+        return semgrep_results_with_vibes
+
     if not semgrep_results_with_vibes or "results" not in semgrep_results_with_vibes:
         return semgrep_results_with_vibes
 

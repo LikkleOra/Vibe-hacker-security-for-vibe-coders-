@@ -12,7 +12,7 @@ We will use GitHub Actions, as the project is already set up with a `.github/wor
 
 1.  **Create a new GitHub Actions workflow file:** ` .github/workflows/vibesec.yml`.
 
-2.  **Trigger the workflow:** The workflow will trigger on `push` events to the `main` branch.
+2.  **Trigger the workflow:** The workflow will trigger on `push` and `pull_request` events to the `main` branch.
 
 3.  **Checkout the code:** The workflow will use the `actions/checkout@v3` action to checkout the code.
 
@@ -24,9 +24,10 @@ We will use GitHub Actions, as the project is already set up with a `.github/wor
 
 7.  **Handle API Key:** The `GEMINI_API_KEY` will be stored as a secret in the GitHub repository settings and accessed in the workflow using `${{ secrets.GEMINI_API_KEY }}`.
 
-8.  **Upload results:** The `final_coached_results.json` file will be uploaded as an artifact using the `actions/upload-artifact@v3` action.
+8.  **Check for critical vulnerabilities:** The workflow will run the `check_results.py` script to check for high-severity vulnerabilities. If any are found, the workflow will fail, blocking the pull request from being merged.
+
+9.  **Post PR comment:** The workflow will post a summary of the scan results as a comment on the pull request.
+
+10. **Upload results:** The `final_coached_results.json` file will be uploaded as an artifact using the `actions/upload-artifact@v3` action.
 
 ## Future Enhancements
-
-*   **Pull Request comments:** Post a summary of the scan results as a comment on the pull request.
-*   **Status checks:** Use the scan results to create a status check on the pull request, which can be used to block merging if critical vulnerabilities are found.

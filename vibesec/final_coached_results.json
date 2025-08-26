@@ -1,0 +1,290 @@
+{
+  "version": "1.133.0",
+  "results": [
+    {
+      "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
+      "path": "vibesec\\convex\\scans.ts",
+      "start": {
+        "line": 11,
+        "col": 32,
+        "offset": 448
+      },
+      "end": {
+        "line": 11,
+        "col": 36,
+        "offset": 452
+      },
+      "extra": {
+        "message": "Detected possible user input going into a `path.join` or `path.resolve` function. This could possibly lead to a path traversal vulnerability,  where the attacker can access arbitrary files stored in the file system. Instead, be sure to sanitize or validate user input first.",
+        "metadata": {
+          "owasp": [
+            "A05:2017 - Broken Access Control",
+            "A01:2021 - Broken Access Control"
+          ],
+          "cwe": [
+            "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+          ],
+          "category": "security",
+          "references": [
+            "https://owasp.org/www-community/attacks/Path_Traversal"
+          ],
+          "technology": [
+            "javascript",
+            "node.js"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "vuln"
+          ],
+          "likelihood": "HIGH",
+          "impact": "MEDIUM",
+          "confidence": "LOW",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Path Traversal"
+          ],
+          "source": "https://semgrep.dev/r/javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
+          "shortlink": "https://sg.run/OPqk"
+        },
+        "severity": "WARNING",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS",
+        "vibe_message": "Vibe check... Heads up! This is worth a look. We've seen this pattern cause trouble before.\nSpecifically, this looks like a path traversal risk. Make sure any user input used for file paths is sanitized. Never trust input!",
+        "ai_coach_notes": {
+          "jargon_explanation": "AI Coach Skipped.",
+          "risk_analysis": "Gemini API key not configured.",
+          "suggested_fix": "Please add your GEMINI_API_KEY to vibesec/.env.local to enable AI analysis.",
+          "vibe": "The AI coach is unavailable."
+        }
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 3,
+      "level": "warn",
+      "type": [
+        "PartialParsing",
+        [
+          {
+            "path": "vibesec\\convex\\scans.ts",
+            "start": {
+              "line": 101,
+              "col": 22,
+              "offset": 0
+            },
+            "end": {
+              "line": 101,
+              "col": 95,
+              "offset": 73
+            }
+          }
+        ]
+      ],
+      "message": "Syntax error at line vibesec\\convex\\scans.ts:101:\n ``File: ${path.relative(dir, file)}, Match: \"${match.substring(0, 50)}\"...` was unexpected",
+      "path": "vibesec\\convex\\scans.ts",
+      "spans": [
+        {
+          "file": "vibesec\\convex\\scans.ts",
+          "start": {
+            "line": 101,
+            "col": 22,
+            "offset": 0
+          },
+          "end": {
+            "line": 101,
+            "col": 95,
+            "offset": 73
+          }
+        }
+      ]
+    }
+  ],
+  "paths": {
+    "scanned": [
+      ".github\\workflows\\ci.yml",
+      ".github\\workflows\\vibesec.yml",
+      ".trunk\\.gitignore",
+      ".trunk\\configs\\.isort.cfg",
+      ".trunk\\configs\\.markdownlint.yaml",
+      ".trunk\\configs\\.yamllint.yaml",
+      ".trunk\\configs\\ruff.toml",
+      ".trunk\\configs\\svgo.config.mjs",
+      ".trunk\\trunk.yaml",
+      "CICD_PLAN.md",
+      "FootblaDEv.md",
+      "gemini.md",
+      "LICENSE",
+      "package-lock.json",
+      "README.md",
+      "requirements.txt",
+      "results.json",
+      "run_vibesec_scan.py",
+      "vibesec\\.gitignore",
+      "vibesec\\__pycache__\\ai_coach.cpython-313.pyc",
+      "vibesec\\__pycache__\\post_processor.cpython-312.pyc",
+      "vibesec\\__pycache__\\post_processor.cpython-313.pyc",
+      "vibesec\\__pycache__\\semgrep_runner.cpython-312.pyc",
+      "vibesec\\__pycache__\\semgrep_runner.cpython-313.pyc",
+      "vibesec\\ai_coach.py",
+      "vibesec\\components.json",
+      "vibesec\\convex\\_generated\\api.d.ts",
+      "vibesec\\convex\\_generated\\api.js",
+      "vibesec\\convex\\_generated\\dataModel.d.ts",
+      "vibesec\\convex\\_generated\\server.d.ts",
+      "vibesec\\convex\\_generated\\server.js",
+      "vibesec\\convex\\auth.config.js",
+      "vibesec\\convex\\http.ts.bak",
+      "vibesec\\convex\\scans.ts",
+      "vibesec\\convex\\schema.ts",
+      "vibesec\\convex\\users.ts",
+      "vibesec\\convex.log",
+      "vibesec\\eslint.config.mjs",
+      "vibesec\\final_coached_results.json",
+      "vibesec\\global.setup.ts",
+      "vibesec\\jest.config.js",
+      "vibesec\\jest.setup.js",
+      "vibesec\\next.config.ts",
+      "vibesec\\package-lock.json",
+      "vibesec\\package.json",
+      "vibesec\\playwright-report\\index.html",
+      "vibesec\\playwright.config.ts",
+      "vibesec\\post_processor.py",
+      "vibesec\\postcss.config.mjs",
+      "vibesec\\public\\file.svg",
+      "vibesec\\public\\globe.svg",
+      "vibesec\\public\\next.svg",
+      "vibesec\\public\\vercel.svg",
+      "vibesec\\public\\window.svg",
+      "vibesec\\README.md",
+      "vibesec\\semgrep_rules\\vibe-rules.yml",
+      "vibesec\\semgrep_runner.py",
+      "vibesec\\src\\__mocks__\\@clerk\\nextjs.js",
+      "vibesec\\src\\__mocks__\\next\\navigation.js",
+      "vibesec\\src\\app\\dashboard\\page.tsx",
+      "vibesec\\src\\app\\favicon.ico",
+      "vibesec\\src\\app\\globals.css",
+      "vibesec\\src\\app\\layout.tsx",
+      "vibesec\\src\\app\\not-found.tsx",
+      "vibesec\\src\\app\\page.tsx",
+      "vibesec\\src\\components\\__tests__\\Header.test.tsx",
+      "vibesec\\src\\components\\AuthGuard.tsx",
+      "vibesec\\src\\components\\Header.tsx",
+      "vibesec\\src\\components\\IssueCard.tsx",
+      "vibesec\\src\\components\\providers.tsx",
+      "vibesec\\src\\components\\RepoUpload.tsx",
+      "vibesec\\src\\components\\ScanForm.tsx",
+      "vibesec\\src\\components\\ui\\button.tsx",
+      "vibesec\\src\\components\\ui\\input.tsx",
+      "vibesec\\src\\components\\ui\\label.tsx",
+      "vibesec\\src\\components\\ui\\sonner.tsx",
+      "vibesec\\src\\components\\VulnerabilityScanner.tsx",
+      "vibesec\\src\\hooks\\useSafeConvex.ts",
+      "vibesec\\src\\lib\\patterns.ts",
+      "vibesec\\src\\lib\\secrets.ts",
+      "vibesec\\src\\lib\\utils.ts",
+      "vibesec\\src\\middleware.ts",
+      "vibesec\\test-results\\.last-run.json",
+      "vibesec\\tests-e2e\\auth.authenticated.spec.ts",
+      "vibesec\\tests-e2e\\auth.spec.ts",
+      "vibesec\\tests-e2e\\scan.spec.ts",
+      "vibesec\\tsconfig.json"
+    ]
+  },
+  "time": {
+    "rules": [],
+    "rules_parse_time": 24.20459008216858,
+    "profiling_times": {
+      "config_time": 13.288957118988037,
+      "core_time": 68.36711287498474,
+      "ignores_time": 0.026639938354492188,
+      "total_time": 81.6905927658081
+    },
+    "parsing_time": {
+      "total_time": 0.0,
+      "per_file_time": {
+        "mean": 0.0,
+        "std_dev": 0.0
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.0,
+        "count_ratio": 0.0
+      },
+      "very_slow_files": []
+    },
+    "scanning_time": {
+      "total_time": 28.91972541809082,
+      "per_file_time": {
+        "mean": 0.12254120939868997,
+        "std_dev": 0.16934022660703366
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.4453241979348072,
+        "count_ratio": 0.0211864406779661
+      },
+      "very_slow_files": [
+        {
+          "fpath": "vibesec\\playwright-report\\index.html",
+          "ftime": 1.9746439456939697
+        },
+        {
+          "fpath": "vibesec\\convex\\scans.ts",
+          "ftime": 2.080613136291504
+        },
+        {
+          "fpath": "vibesec\\playwright-report\\index.html",
+          "ftime": 2.127609968185425
+        },
+        {
+          "fpath": "vibesec\\package-lock.json",
+          "ftime": 2.1286160945892334
+        },
+        {
+          "fpath": "vibesec\\package-lock.json",
+          "ftime": 4.5671703815460205
+        }
+      ]
+    },
+    "matching_time": {
+      "total_time": 0.0,
+      "per_file_and_rule_time": {
+        "mean": 0.0,
+        "std_dev": 0.0
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.0,
+        "count_ratio": 0.0
+      },
+      "very_slow_rules_on_files": []
+    },
+    "tainting_time": {
+      "total_time": 0.0,
+      "per_def_and_rule_time": {
+        "mean": 0.0,
+        "std_dev": 0.0
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.0,
+        "count_ratio": 0.0
+      },
+      "very_slow_rules_on_defs": []
+    },
+    "fixpoint_timeouts": [],
+    "prefiltering": {
+      "project_level_time": 0.0,
+      "file_level_time": 0.0,
+      "rules_with_project_prefilters_ratio": 0.0,
+      "rules_with_file_prefilters_ratio": 0.9733742133290302,
+      "rules_selected_ratio": 0.059464256898499275,
+      "rules_matched_ratio": 0.059464256898499275
+    },
+    "targets": [],
+    "total_bytes": 0,
+    "max_memory_bytes": 1164635520
+  },
+  "engine_requested": "OSS",
+  "skipped_rules": []
+}

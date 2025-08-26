@@ -12,6 +12,9 @@ I'm currently working in the directory: /workspaces/Vibe-hacker-security-for-vib
 - Fixed all linting errors and warnings.
 - Removed the duplicate `package-lock.json` file to resolve conflicts.
 - The application is now in a more stable and user-friendly state.
+- Configured the CI/CD pipeline to block pull requests with high-severity vulnerabilities.
+- Configured the CI/CD pipeline to post a summary of the scan results as a comment on the pull request.
+- Implemented a web dashboard to display scan results.
 
 ## Issue Log
 

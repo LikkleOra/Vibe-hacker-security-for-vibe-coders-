@@ -13,7 +13,8 @@ def run_scan(path="."):
             command,
             capture_output=True,
             text=True,  # Decode stdout/stderr as text
-            check=True  # Raise an exception for non-zero exit codes
+            check=True,  # Raise an exception for non-zero exit codes
+            encoding="utf-8"
         )
         return json.loads(result.stdout)
     except FileNotFoundError:
